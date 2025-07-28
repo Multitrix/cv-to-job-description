@@ -1,0 +1,63 @@
+```
+TAREK ASHRAF
+
+| Portfolio: [Portfolio](https://tarek7669.github.io/Portfolio/) | 
+| LinkedIn: [Tarek Ashraf](https://www.linkedin.com/in/tarek-ashraf-393632193/) | 
+| Mobile: +201019061752 | 
+| GitHub: [GitHub](https://github.com/tarek7669) | 
+| Email: tarek.ashraf.7669@gmail.com | 
+
+____________________________________________________________________________________
+
+Experience
+
+**Team Lead Software Engineer & CTO**  
+*Parajob | May 2023 � March 2024*  
+� Led a team of 3-4 developers, building mobile and web applications using BLoC and MVVM architecture.  
+� Developed secure backend logic and API integrations to enhance product functionality.  
+� Ensured production-grade machine learning solutions implemented with CI/CD pipelines and Git version control.  
+� Collaborated with cross-functional teams to translate business requirements into technical solutions for digital transformation in infrastructure projects.  
+
+____________________________________________________________________________________
+
+Projects
+
+**Generative AI & NLP Chatbot**  
+� Developed an end-to-end LLM-powered assistant utilizing LangChain and retrieval-augmented generation (RAG) techniques for context retrieval.  
+� Technologies: LangChain, RAG, Flask, Hugging Face, Agents.  
+
+**AI-Powered Movie Recommendation System**  
+� Created a data-driven recommendation engine to improve content personalization, optimizing decision-making efficiency in digital content delivery.  
+� Technologies: Python, Pandas, Flask, Numpy, K-Fold, Collaborative Filtering.  
+
+____________________________________________________________________________________
+
+Education
+
+**Bachelor's Degree in Computer Science**  
+*University Name | Graduation Year* (Add this information.)
+
+____________________________________________________________________________________
+
+Certifications
+
+� [Building AI Browser Agents](https://learn.deeplearning.ai/accomplishments/049f306c-8bbd-4cd1-908b-c51d8b005557?usp=sharing) | DeepLearning.AI | 2025  
+� [Generative AI with Large Language Models](https://coursera.org/share/f788bc5d2dd6af0d3d64068a0fbfc5d4) | Coursera | 2023  
+� [Machine Learning Modeling Pipelines in Production](https://coursera.org/share/1c2ceb500b64599ce4d89e9ce3f0413c) | Coursera | 2024  
+
+____________________________________________________________________________________
+
+Skills
+
+� AI/ML development  
+� Python programming  
+� Large language models (LLMs)  
+� Retrieval-Augmented Generation (RAG) techniques  
+� TensorFlow, PyTorch  
+� Data integration and engineering  
+� Knowledge of LLM APIs (e.g., OpenAI, Hugging Face)  
+� Cloud platforms (AWS, Azure, GCP)  
+� Containerization (Docker, Kubernetes)  
+� Strong verbal and written communication skills  
+� Excellent problem-solving skills  
+```

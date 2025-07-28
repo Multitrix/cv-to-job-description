@@ -1,0 +1,6 @@
+reportlab
+openai 
+faiss-cpu 
+numpy
+python-dotenv
+fastapi
