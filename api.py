@@ -3,13 +3,13 @@ from fastapi.responses import FileResponse
 import json
 import os
 from Models import CVRequest, PersonalInfo
-from cv_generator import save_cv
+from cv_generator import save_cv, generate_cv
 
 app = FastAPI()
 
 
 @app.get('/personal-info')
-def get_personal_info(file_path="generated\\personal_info.json"):
+def get_personal_info(file_path="generated/personal_info.json"):
     try:
         with open(file_path, 'r') as file:
             return json.load(file)
@@ -35,7 +35,7 @@ def post_job_description(description:str):
 
 
 @app.post('/generate-cv')
-def generate_cv(request: CVRequest):
+def cv_generation(request: CVRequest):
     try:
         cv = generate_cv(request.personal_info, request.job_description)
         pdf_path = save_cv(cv, 'generated/CV.pdf')

@@ -1,9 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class CVRequest(BaseModel):
-    personal_info: dict
-    job_description: str
 
 class PersonalInfo(BaseModel):
     name: str
@@ -19,3 +16,8 @@ class PersonalInfo(BaseModel):
     certifications: Optional[list[dict]]
     languages: list[str]
     projects: Optional[list[dict]]
+
+
+class CVRequest(BaseModel):
+    personal_info: PersonalInfo
+    job_description: str
