@@ -35,10 +35,10 @@ def post_job_description(description:str):
 
 
 @app.post('/generate-cv')
-def cv_generation(request: CVRequest):
+async def cv_generation(request: CVRequest):
     try:
-        cv = generate_cv(request.personal_info, request.job_description)
-        pdf_path = save_cv(cv, 'generated/CV.pdf')
+        cv = await generate_cv(request.personal_info, request.job_description)
+        pdf_path = await save_cv(cv, 'generated/CV.pdf')
         return {"message": "CV generated successfully", "pdf_path": pdf_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
