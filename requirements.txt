@@ -6,3 +6,7 @@ python-dotenv
 fastapi
 uvicorn
 pydantic
+openai
+tenacity
+rapidfuzz
+pinecone
