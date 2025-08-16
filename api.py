@@ -2,9 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 import json
 import os
-from Models import CVRequest, PersonalInfo
-from cv_generator import save_cv, generate_cv
-
+from database import FirebaseManager
 
 from ai_layer.pipeline import run as ai_pipeline
 from ai_layer.models import LayerInput
@@ -12,7 +10,13 @@ from Models import CVRequest, PersonalInfo
 from cv_generator import save_cv, generate_cv
 
 app = FastAPI()
+firebase = FirebaseManager()
+db = firebase.get_firestore_client()
 
+
+@app.get('/test')
+def test():
+    return {'message': 'A7A di eshtaghalet'}
 
 @app.get('/personal-info')
 def get_personal_info(file_path="generated/personal_info.json"):

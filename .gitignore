@@ -7,3 +7,5 @@
 /venv
 .vscode
 .venv
+/__pycache__
+cv-generator-45805-firebase-adminsdk-fbsvc-a96ee39b37.json
