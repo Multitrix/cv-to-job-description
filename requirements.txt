@@ -10,3 +10,6 @@ openai
 tenacity
 rapidfuzz
 pinecone
+pydantic-extra-types
+phonenumbers
+email-validator

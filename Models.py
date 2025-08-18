@@ -1,13 +1,14 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber
 from typing import Optional
 
 
 class PersonalInfo(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     address: Optional[str]
     portfolio: Optional[str]
-    phone: str
+    phone: PhoneNumber
     linkedIn: str
     github: Optional[str]
     skills: list[str]

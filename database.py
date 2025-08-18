@@ -12,7 +12,7 @@ class FirebaseManager:
             if cls._instance is None:
                 cls._instance = super().__new__(cls)
                 # Initialize Firebase Admin SDK
-                cred = credentials.Certificate("path/to/your/serviceAccountKey.json")
+                cred = credentials.Certificate("cv-generator-45805-firebase-adminsdk-fbsvc-a96ee39b37.json")
                 firebase_admin.initialize_app(cred)
                 cls._db = firestore.client()
             return cls._instance
