@@ -18,8 +18,8 @@ db = firebase.get_firestore_client()
 def test():
     return {'message': 'API is running'}
 
-@app.get('/personal-info')
-def get_personal_info(document_id):
+@app.get('/personal-info/{document_id}')
+def get_personal_info(document_id=None):
     try:
         # with open(file_path, 'r') as file:
         #     return json.load(file)
