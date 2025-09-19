@@ -9,7 +9,14 @@ from job_analyzer import get_job_description, analyze_job_description
 from pdf_generator import convert_text_to_pdf
 
 # Initialize OpenAI client
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+# client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+
+# Initialize Open Router client
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key=os.environ.get("OPEN_ROUTER_API_KEY"),
+)
 
 def find_relevant_info(vector_db, job_analysis, k=10):
     """Find relevant information from personal info based on job analysis."""
@@ -112,8 +119,18 @@ def generate_cv(personal_info, job_description):
        This ensures only the certificate name is visible and clickable in the final PDF.
     """
     
+    # response = client.chat.completions.create(
+    #     model="gpt-4o-mini",
+    #     messages=[
+    #         {"role": "system", "content": "You are an expert CV writer who creates tailored, ATS-friendly CVs. Your task is to create a CV that matches EXACTLY the format specified, highlighting the candidate's relevant experience and skills for the specific job they're applying for. Do not fabricate information, but adapt the wording to align with the job description keywords."},
+    #         {"role": "user", "content": prompt}
+    #     ]
+    # )
+
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        extra_headers={},
+        extra_body={},
+        model="deepseek/deepseek-chat-v3.1:free",
         messages=[
             {"role": "system", "content": "You are an expert CV writer who creates tailored, ATS-friendly CVs. Your task is to create a CV that matches EXACTLY the format specified, highlighting the candidate's relevant experience and skills for the specific job they're applying for. Do not fabricate information, but adapt the wording to align with the job description keywords."},
             {"role": "user", "content": prompt}
