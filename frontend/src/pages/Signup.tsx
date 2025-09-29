@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, signInWithRedirect, getRedirectResult, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { createOrUpdateUserDocument } from '../utils/userService';
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,59 +33,56 @@ const Login: React.FC = () => {
       try {
         const result = await getRedirectResult(auth);
         if (result?.user) {
-          console.log('Redirect sign-in successful:', result.user);
+          console.log('Redirect sign-up successful:', result.user);
           // Create or update user document in Firestore
           await createOrUpdateUserDocument(result.user);
           // Navigation will be handled by the currentUser useEffect
         }
       } catch (error: any) {
         console.error('Redirect result error:', error);
-        setError(`Redirect sign-in failed: ${error.message}`);
+        setError(`Redirect sign-up failed: ${error.message}`);
       }
     };
 
     handleRedirectResult();
   }, []);
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignup = async () => {
     try {
       setError('');
       setLoading(true);
-      console.log('Starting Google sign-in with popup...');
-      console.log('Auth instance:', auth);
-      console.log('Google provider:', googleProvider);
+      console.log('Starting Google sign-up with popup...');
 
-      // Try with additional timeout and better error handling
       const result = await signInWithPopup(auth, googleProvider);
-      console.log('Sign-in successful:', result.user);
+      console.log('Sign-up successful:', result.user);
 
       // Create or update user document in Firestore
       await createOrUpdateUserDocument(result.user);
 
       // Success - navigation will be handled by useEffect when currentUser updates
-      console.log(`Login successful! Welcome ${result.user.displayName}`);
+      console.log(`Signup successful! Welcome ${result.user.displayName}`);
 
     } catch (error: any) {
-      console.error('Login error details:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
+      console.error('Signup error details:', error);
 
-      let errorMessage = 'Failed to sign in with Google. Please try again.';
+      let errorMessage = 'Failed to sign up with Google. Please try again.';
 
       if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = 'The sign-in popup was closed. Try using "Sign in with Redirect" instead.';
+        errorMessage = 'The sign-up popup was closed. Try using "Sign up with Redirect" instead.';
       } else if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Pop-up was blocked by your browser. Try using "Sign in with Redirect" instead.';
+        errorMessage = 'Pop-up was blocked by your browser. Try using "Sign up with Redirect" instead.';
       } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized for Google sign-in. Please contact support.';
+        errorMessage = 'This domain is not authorized for Google sign-up. Please contact support.';
       } else if (error.code === 'auth/operation-not-allowed') {
-        errorMessage = 'Google sign-in is not enabled for this project. Please contact support.';
+        errorMessage = 'Google sign-up is not enabled for this project. Please contact support.';
       } else if (error.code === 'auth/cancelled-popup-request') {
-        errorMessage = 'Another sign-in popup is already open. Please close it and try again.';
+        errorMessage = 'Another sign-up popup is already open. Please close it and try again.';
       } else if (error.code === 'auth/network-request-failed') {
         errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
+        errorMessage = 'An account already exists with this email. Please sign in instead.';
       } else {
-        errorMessage = `Sign-in failed: ${error.message}`;
+        errorMessage = `Sign-up failed: ${error.message}`;
       }
 
       setError(errorMessage);
@@ -92,59 +91,73 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleGoogleLoginRedirect = async () => {
+  const handleGoogleSignupRedirect = async () => {
     try {
       setError('');
       setLoading(true);
-      console.log('Starting Google sign-in with redirect...');
+      console.log('Starting Google sign-up with redirect...');
 
       await signInWithRedirect(auth, googleProvider);
       // This will redirect the page, so we won't reach this point
 
     } catch (error: any) {
-      console.error('Redirect login error:', error);
-      setError(`Redirect sign-in failed: ${error.message}`);
+      console.error('Redirect signup error:', error);
+      setError(`Redirect sign-up failed: ${error.message}`);
       setLoading(false);
     }
   };
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setError('Please enter both email and password');
+    if (!email || !password || !confirmPassword || !displayName) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
       return;
     }
 
     try {
       setError('');
       setLoading(true);
-      console.log('Starting email sign-in...');
+      console.log('Starting email sign-up...');
 
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Email sign-in successful!');
+      // Create user account
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Update the user's display name
+      await updateProfile(result.user, {
+        displayName: displayName
+      });
 
       // Create or update user document in Firestore
       await createOrUpdateUserDocument(result.user);
 
+      console.log('Email sign-up successful!');
       // Navigation will be handled by useEffect when currentUser updates
 
     } catch (error: any) {
-      console.error('Email login error:', error);
-      let errorMessage = 'Failed to sign in. Please try again.';
+      console.error('Email signup error:', error);
+      let errorMessage = 'Failed to create account. Please try again.';
 
-      if (error.code === 'auth/user-not-found') {
-        errorMessage = 'No account found with this email address.';
-      } else if (error.code === 'auth/wrong-password') {
-        errorMessage = 'Incorrect password. Please try again.';
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'An account already exists with this email address.';
       } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'Invalid email address format.';
-      } else if (error.code === 'auth/user-disabled') {
-        errorMessage = 'This account has been disabled. Please contact support.';
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMessage = 'Too many failed attempts. Please try again later.';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = 'Password is too weak. Please use a stronger password.';
+      } else if (error.code === 'auth/operation-not-allowed') {
+        errorMessage = 'Email/password sign-up is not enabled. Please contact support.';
       } else {
-        errorMessage = `Sign-in failed: ${error.message}`;
+        errorMessage = `Sign-up failed: ${error.message}`;
       }
 
       setError(errorMessage);
@@ -170,10 +183,10 @@ const Login: React.FC = () => {
           <p className="text-text-body">AI-Powered CVs tailored to your dream job</p>
         </div>
 
-        {/* Login Card */}
+        {/* Signup Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           <h2 className="text-2xl font-bold text-center text-text-header mb-6">
-            Welcome Back
+            Create Account
           </h2>
 
           {error && (
@@ -187,9 +200,9 @@ const Login: React.FC = () => {
           )}
 
           <div className="space-y-4">
-            {/* Google Sign In with Popup */}
+            {/* Google Sign Up with Popup */}
             <button
-              onClick={handleGoogleLogin}
+              onClick={handleGoogleSignup}
               disabled={loading}
               className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -199,7 +212,7 @@ const Login: React.FC = () => {
                 <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              {loading ? 'Signing in...' : 'Continue with Google'}
+              {loading ? 'Creating account...' : 'Continue with Google'}
             </button>
 
             <div className="relative">
@@ -207,12 +220,28 @@ const Login: React.FC = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                <span className="px-2 bg-white text-gray-500">Or create account with</span>
               </div>
             </div>
 
             {/* Email/Password Form */}
-            <form onSubmit={handleEmailLogin} className="space-y-4">
+            <form onSubmit={handleEmailSignup} className="space-y-4">
+              {/* Display Name Input */}
+              <div>
+                <label htmlFor="displayName" className="block text-sm font-medium text-text-body mb-2">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="displayName"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="Enter your full name"
+                  disabled={loading}
+                />
+              </div>
+
               {/* Email Input */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-text-body mb-2">
@@ -245,27 +274,41 @@ const Login: React.FC = () => {
                 />
               </div>
 
-              {/* Sign In Button */}
+              {/* Confirm Password Input */}
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-body mb-2">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="Confirm your password"
+                  disabled={loading}
+                />
+              </div>
+
+              {/* Create Account Button */}
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Signing In...' : 'Sign In'}
+                {loading ? 'Creating Account...' : 'Create Account'}
               </button>
             </form>
 
             {/* Links */}
-            <div className="flex items-center justify-between text-sm">
-              <button className="text-accent hover:text-accent-dark">
-                Forgot your password?
-              </button>
+            <div className="text-center text-sm">
+              <span className="text-text-body">Already have an account? </span>
               <Link
-                to="/signup"
+                to="/login"
                 state={{ from: location.state?.from }}
-                className="text-accent hover:text-accent-dark"
+                className="text-accent hover:text-accent-dark font-medium"
               >
-                Create account
+                Sign in
               </Link>
             </div>
           </div>
@@ -285,4 +328,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Signup;

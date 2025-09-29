@@ -11,3 +11,5 @@
 cv-generator-45805-firebase-adminsdk-fbsvc-a96ee39b37.json
 /ai_layer/__pycache__
 /databutton
+/.claude
+*.json
