@@ -10,7 +10,9 @@
       "Bash(npm start)",
       "Bash(npm run build:*)",
       "Bash(npm uninstall:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(curl http://localhost:8000/test)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

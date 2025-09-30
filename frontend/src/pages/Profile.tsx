@@ -182,6 +182,9 @@ const Profile: React.FC = () => {
             <span className="text-2xl font-bold text-text-header">CVTailor</span>
           </Link>
           <div className="flex items-center space-x-6">
+            <Link to="/cv-generator" className="text-text-body hover:text-primary transition-colors">
+              CV Generator
+            </Link>
             <Link to="/learn-more" className="text-text-body hover:text-primary transition-colors">
               Learn more
             </Link>

@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import LearnMore from './pages/LearnMore';
 import Profile from './pages/Profile';
+import CVGenerator from './pages/CVGenerator';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/learn-more" element={<LearnMore />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/cv-generator" element={<CVGenerator />} />
           </Routes>
         </div>
       </Router>

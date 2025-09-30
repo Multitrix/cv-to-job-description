@@ -15,6 +15,13 @@ class MockDocument:
     def get(self):
         return self
 
+class MockOrderedCollection:
+    def __init__(self, collection):
+        self.collection = collection
+
+    def stream(self):
+        return self.collection.stream()
+
 class MockCollection:
     def __init__(self):
         self.documents = {}
@@ -29,7 +36,7 @@ class MockCollection:
         return datetime.utcnow(), doc_ref
 
     def order_by(self, field, direction='ASCENDING'):
-        return self
+        return MockOrderedCollection(self)
 
     def stream(self):
         for doc_id, data in self.documents.items():
@@ -54,7 +61,11 @@ class MockDocumentRef:
             self.collection.documents[self.id].update(data)
 
     def collection(self, name):
-        return MockCollection()
+        if not hasattr(self, '_subcollections'):
+            self._subcollections = {}
+        if name not in self._subcollections:
+            self._subcollections[name] = MockCollection()
+        return self._subcollections[name]
 
 class MockFirestore:
     def __init__(self):

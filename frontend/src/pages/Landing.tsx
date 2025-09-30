@@ -46,16 +46,15 @@ const Landing: React.FC = () => {
             </Link>
             {currentUser ? (
               <>
+                <Link to="/cv-generator" className="text-text-body hover:text-primary transition-colors">
+                  CV Generator
+                </Link>
+                <Link to="/profile" className="text-text-body hover:text-primary transition-colors">
+                  My Profile
+                </Link>
                 <span className="text-text-body">
                   Welcome, {currentUser.displayName?.split(' ')[0] || currentUser.email}
                 </span>
-                <Link
-                  to="/profile"
-                  className="w-10 h-10 bg-accent text-white rounded-full flex items-center justify-center font-bold text-lg hover:bg-accent-dark transition-colors"
-                  title="My Profile"
-                >
-                  {(currentUser.displayName?.[0] || currentUser.email?.[0] || 'U').toUpperCase()}
-                </Link>
                 <button
                   onClick={handleLogout}
                   className="px-6 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors"
@@ -109,12 +108,21 @@ const Landing: React.FC = () => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <Link
-                  to="/login"
-                  className="px-8 py-4 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors text-center font-medium text-lg"
-                >
-                  Create Your CV
-                </Link>
+                {currentUser ? (
+                  <Link
+                    to="/cv-generator"
+                    className="px-8 py-4 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors text-center font-medium text-lg"
+                  >
+                    Generate CV Now
+                  </Link>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="px-8 py-4 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors text-center font-medium text-lg"
+                  >
+                    Create Your CV
+                  </Link>
+                )}
                 <button className="px-8 py-4 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors text-center font-medium text-lg">
                   See Examples
                 </button>

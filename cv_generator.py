@@ -119,23 +119,23 @@ def generate_cv(personal_info, job_description):
        This ensures only the certificate name is visible and clickable in the final PDF.
     """
     
-    # response = client.chat.completions.create(
-    #     model="gpt-4o-mini",
-    #     messages=[
-    #         {"role": "system", "content": "You are an expert CV writer who creates tailored, ATS-friendly CVs. Your task is to create a CV that matches EXACTLY the format specified, highlighting the candidate's relevant experience and skills for the specific job they're applying for. Do not fabricate information, but adapt the wording to align with the job description keywords."},
-    #         {"role": "user", "content": prompt}
-    #     ]
-    # )
-
     response = client.chat.completions.create(
-        extra_headers={},
-        extra_body={},
-        model="deepseek/deepseek-chat-v3.1:free",
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "You are an expert CV writer who creates tailored, ATS-friendly CVs. Your task is to create a CV that matches EXACTLY the format specified, highlighting the candidate's relevant experience and skills for the specific job they're applying for. Do not fabricate information, but adapt the wording to align with the job description keywords."},
             {"role": "user", "content": prompt}
         ]
     )
+
+    # response = client.chat.completions.create(
+    #     extra_headers={},
+    #     extra_body={},
+    #     model="deepseek/deepseek-chat-v3.1:free",
+    #     messages=[
+    #         {"role": "system", "content": "You are an expert CV writer who creates tailored, ATS-friendly CVs. Your task is to create a CV that matches EXACTLY the format specified, highlighting the candidate's relevant experience and skills for the specific job they're applying for. Do not fabricate information, but adapt the wording to align with the job description keywords."},
+    #         {"role": "user", "content": prompt}
+    #     ]
+    # )
     
     return response.choices[0].message.content
 

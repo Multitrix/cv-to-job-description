@@ -7,19 +7,11 @@ from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
-try:
-    from database import FirebaseManager
-    # Test if Firebase is properly configured
-    firebase = FirebaseManager()
-    db = firebase.get_firestore_client()
-    print("Firebase configured successfully")
-except Exception as e:
-    # Use mock Firebase if service account key is not available
-    from mock_firebase import MockFirebaseManager as FirebaseManager
-    print(f"Warning: Using mock Firebase due to: {e}")
-    print("Please set up Firebase service account key for production.")
-    firebase = FirebaseManager()
-    db = firebase.get_firestore_client()
+from database import FirebaseManager
+# Initialize Firebase with proper credentials
+firebase = FirebaseManager()
+db = firebase.get_firestore_client()
+print("Firebase configured successfully")
 from ai_layer.pipeline import tailor_profile
 from ai_layer.models import LayerInput, JobDescription, FullProfile
 from Models import CVRequest, PersonalInfo
@@ -44,6 +36,7 @@ app.add_middleware(
 @app.get('/test')
 def test():
     return {'message': 'API is running'}
+
 
 @app.get('/personal-info/{document_id}')
 def get_personal_info(document_id=None):
@@ -100,11 +93,44 @@ async def post_job_description(request: dict):
         user_profile = doc.to_dict()
 
         # Transform user profile to AI layer format
+        # Convert experience data to match AI layer structure
+        ai_experiences = []
+        for idx, exp in enumerate(user_profile.get('experience', [])):
+            ai_exp = {
+                'id': f"exp_{idx}",
+                'title': exp.get('role', ''),
+                'company': exp.get('company', ''),
+                'start_date': None,
+                'end_date': None,
+                'bullets': [f"Worked at {exp.get('company', '')} as {exp.get('role', '')} for {exp.get('years', 0)} years"],
+                'skills': []
+            }
+            ai_experiences.append(ai_exp)
+
+        # Convert projects data to match AI layer structure
+        ai_projects = []
+        for idx, proj in enumerate(user_profile.get('projects', [])):
+            ai_proj = {
+                'id': f"proj_{idx}",
+                'name': proj.get('title', ''),
+                'bullets': [proj.get('description', '')],
+                'skills': []
+            }
+            ai_projects.append(ai_proj)
+
+        # Convert certifications to list of strings
+        ai_certifications = []
+        for cert in user_profile.get('certifications', []):
+            if isinstance(cert, dict):
+                ai_certifications.append(cert.get('name', ''))
+            else:
+                ai_certifications.append(str(cert))
+
         full_profile = FullProfile(
-            experiences=user_profile.get('experience', []),
-            projects=user_profile.get('projects', []),
+            experiences=ai_experiences,
+            projects=ai_projects,
             skills=user_profile.get('skills', []),
-            certifications=user_profile.get('certifications', [])
+            certifications=ai_certifications
         )
 
         # Build LayerInput for AI pipeline
@@ -134,6 +160,9 @@ async def post_job_description(request: dict):
             "tailored_profile": tailored_profile
         }
     except Exception as e:
+        print(f"Error in job-description endpoint: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -260,4 +289,7 @@ def get_user_cvs(user_id: str):
 
         return {'cvs': cv_list}
     except Exception as e:
+        print(f"Error in get_user_cvs endpoint: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
